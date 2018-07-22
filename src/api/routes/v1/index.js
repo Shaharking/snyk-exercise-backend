@@ -1,6 +1,4 @@
 const express = require('express');
-const userRoutes = require('./user.route');
-const authRoutes = require('./auth.route');
 const packageService = require('../../services/package.service');
 
 const router = express.Router();
@@ -20,13 +18,5 @@ router.get('/package',async (req,res) => {
     const package = await packageService.SearchPackage(name, version);
     res.json(package);
 })
-
-/**
- * GET v1/docs
- */
-router.use('/docs', express.static('docs'));
-
-router.use('/users', userRoutes);
-router.use('/auth', authRoutes);
 
 module.exports = router;

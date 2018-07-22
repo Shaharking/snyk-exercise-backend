@@ -27,7 +27,7 @@ packageSchema.statics = {
             return this.find({$or: packagesQuery})
                         .exec();
         }
-        return [];
+        return Promise.resolve([]);
    },
    async searchPackage(name, version) {
         const package = await this.findOne({name: name, version: version})
@@ -46,13 +46,10 @@ const unflatPopulatedModel = function(package) {
     var len = package.dependencies.length;
 
     if(len == 0){
-        return Object.assign(package, {dependencies:[]} );
+        return Object.assign(package, {dependencies:[], children: []} );
     }
-    var level = packageObject.dependencies[len-1].level;
 
-    var indexs = len - 1;
-    var idxs = [];
-    var deps = {};
+    var level = packageObject.dependencies[len-1].level;
     while (level > 1) 
     {
        sameLevel = packageObject.dependencies.filter(x=> x.level === level);
@@ -67,13 +64,12 @@ const unflatPopulatedModel = function(package) {
        });
        level--;
     }
+    //Make it more constant to you intreate it recusively.
     packageObject.package = {name: packageObject.name, version: packageObject.version};
     packageObject.children = packageObject.dependencies;
     delete packageObject.dependencies;
     return packageObject;
 }
-
-
 
 /**
  * @typedef Package
